@@ -85,7 +85,7 @@ class SuperMarketDashboard {
         const data = this.revenueData.map(d => d.revenue);
         const maxRevenue = Math.max(...data);
         const minRevenue = Math.min(...data);
-        const range = maxRevenue - minRevenue;
+        const range = Math.max(maxRevenue - minRevenue, 100); // Prevent division by zero
         
         // Draw axes
         ctx.strokeStyle = '#ccc';
@@ -204,9 +204,11 @@ class SuperMarketDashboard {
             this.generateReport();
         });
         
-        // Window resize
+        // Window resize with debouncing
+        let resizeTimeout;
         window.addEventListener('resize', () => {
-            this.renderChart();
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => this.renderChart(), 250);
         });
     }
     
@@ -302,28 +304,18 @@ ${RevenueData.getTopProducts(5).map((p, i) =>
         `;
         notification.textContent = message;
         
-        // Add animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from { transform: translateX(400px); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            @keyframes slideOut {
-                from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(400px); opacity: 0; }
-            }
-        `;
-        document.head.appendChild(style);
-        
         document.body.appendChild(notification);
         
         // Remove after 3 seconds
         setTimeout(() => {
-            notification.style.animation = 'slideOut 0.3s ease';
-            setTimeout(() => {
-                document.body.removeChild(notification);
-            }, 300);
+            if (notification.parentNode) {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }
         }, 3000);
     }
 }

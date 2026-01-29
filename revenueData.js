@@ -19,6 +19,7 @@ const RevenueData = {
     
     // Generate revenue data for the past 30 days
     generateDailyRevenue() {
+        this.dailyRevenue = []; // Clear previous data
         const baseRevenue = 5000;
         const now = new Date();
         

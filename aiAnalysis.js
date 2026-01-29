@@ -134,7 +134,8 @@ const AIAnalysis = {
         }
         
         // Product insights
-        const topProduct = products[0];
+        const sortedProducts = [...products].sort((a, b) => b.revenue - a.revenue);
+        const topProduct = sortedProducts[0];
         const totalRevenue = products.reduce((sum, p) => sum + p.revenue, 0);
         const topProductShare = (topProduct.revenue / totalRevenue * 100).toFixed(1);
         
